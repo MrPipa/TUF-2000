@@ -38,11 +38,10 @@ public class Methods {
 
     //Parse list
     public ObservableList<String> parse(ObservableList<String> list) {
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i<list.size() ; i++) {
             String[] temp = list.get(i).split(":"); //temp[0] is index and temp[1] will be the raw data value
-            list.set(i, temp[1]); //replace #:[Value] with just value in list index [#-1]
+            list.set(i, temp[1]); //replace #:[Value] with just value
         }
-        list.remove(0); //Remove the timestamp (already set in GUI, now it wont come up in the list)
         return list;
     }
 
@@ -54,15 +53,17 @@ public class Methods {
         String[] dayNtime = temp[2].split(" "); //[day] hh:mm  -> day, hh:mm
         String day = dayNtime[0];
         String time = dayNtime[1];
+        
+        //TODO fix hour, seems to be two hours behind
 
         String timestamp = day + "." + month + "." + year + "\t" + time; //Much nicer 31.12.2017    23:59
         return timestamp;
     }
 
-    //Get Signal Quality
-    public String getSignalQuality(String s) { //Get low byte from raw integer value
+    //Get low byte decimal (aka. Signal Quality)
+    public String getLowByteDecimalString(String s) { //Get low byte from raw integer value
         String temp = Integer.toBinaryString(Integer.parseInt(s));
-        return Integer.toString( //convert the result from integer to string for final output (ListView)
+        return Integer.toString( //convert the result from integer to string for output
                 bin2int( //convert the low byte from binary to integer
                         temp.substring( //"Select" the low byte
                                 Integer.toBinaryString( //Convert integer value to binary
@@ -75,13 +76,8 @@ public class Methods {
         return Integer.parseInt(s, 2); //Converting to integer from assumed BinaryString
     }
 
-    //REAL4 converter
-    public String getREAL4Value(String high, String low) {
-        return Float.toString(r42f(high, low));
-    }
-
     //REAL4 to float value
-    private float r42f(String high, String low) {
+    public float real4toFloat(String high, String low) {
         //This conversion is explained by Modbus, I will not go into detail how the conversion is made.
         //I am building the equation (-1)^sign * Mantissa * 2^exp as explained by Modbus
 
@@ -107,7 +103,11 @@ public class Methods {
         //Sign
         //From string to char so we can use "charAt" to get first bit
         //and then back to string (with new String(newchar[]{})) so it can be converted to integer
-        sign = Integer.parseInt(new String(new char[]{bin.charAt(0)})); //We want the first "char" from the string => index[0]
+        sign = Integer.parseInt( //Convert String to integer (the sign)
+                new String( //String can be converted to Integer
+                        new char[]{ //Char array can be converted to String
+                            bin.charAt(0) //index 0 = first bit in bin, which is the sign
+                        }));
 
         //Exp (= next 7 bits in decimal - 127)
         char[] next8bits = new char[8];                    //First we make a char array to add the 8 bits to
