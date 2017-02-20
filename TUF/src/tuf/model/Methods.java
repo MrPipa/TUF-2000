@@ -125,12 +125,9 @@ public class Methods {
         else{
             mant = mant/4194304;
         }
-        System.out.println("exp+127: " + (exp+127));
         
         double a = Math.pow(-1, sign);
         double b = mant;
-        System.out.println("mant: " + mant);
-        System.out.println("b: " + b);
         double c = Math.pow(2,exp);
         
         //Value (as double to prevent loss, some java thing)
