@@ -5,11 +5,13 @@
  */
 package tuf.controller;
 
+import java.awt.BorderLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +20,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
+import tuf.model.Data;
 import tuf.model.Methods;
 
 /**
@@ -26,52 +29,48 @@ import tuf.model.Methods;
  */
 public class FXMLcontroller implements Initializable {
 	
+        //Values
 	private Methods m;
 	private URL url;
-        private ObservableList<String> output;
-        private ObservableList<String> templist;
+        private ObservableList<String> rawData = FXCollections.observableArrayList();
+        private ObservableList<Data> values = FXCollections.observableArrayList();
+        private ObservableList<String> description, value, unit = FXCollections.observableArrayList();
         
-        private int indexFlowHigh = 1;
-        private int indexFlowLow = 2;
-        private int indexEnergyFlowHigh = 3;
-        private int indexEnergyFlowLow = 4;
-        private int indexVelocityHigh = 5;
-        private int indexVelocityLow = 6;
-        private int indexFluidSoundSpeedHigh = 7;
-        private int indexFluidSoundSpeedLow = 8;
-        private int indexPositiveAccDecFracHigh = 11;
-        private int indexPositiveAccDecFracLow = 12;
-        private int indexTemp1High = 33;
-        private int indexTemp1Low = 34;
-        private int indexTemp2High = 35;
-        private int indexTemp2Low = 36;
-        private int indexSignalQuality = 92;
-	
+        //Controller instance
 	private static FXMLcontroller instance;
-	
-	@FXML
-	public ListView<String> listview;
-	
-	@FXML
-	public Button quitbutton;
-	
-	@FXML
-	public Button refreshbutton;
         
-        @FXML
-        public Text timestamp;
+        //Modbus register indexes
+        private final int FlowHigh = 1;
+        private final int FlowLow = 2;
+        private final int EnergyFlowHigh = 3;
+        private final int EnergyFlowLow = 4;
+        private final int VelocityHigh = 5;
+        private final int VelocityLow = 6;
+        private final int FluidSoundSpeedHigh = 7;
+        private final int FluidSoundSpeedLow = 8;
+        private final int PositiveAccDecFracHigh = 11;
+        private final int PositiveAccDecFracLow = 12;
+        private final int Temp1High = 33;
+        private final int Temp1Low = 34;
+        private final int Temp2High = 35;
+        private final int Temp2Low = 36;
+        private final int SignalQuality = 92;
 	
-	@Override
+        //GUI elements
+	@FXML private ListView descriptionList;
+        @FXML private ListView valueList;
+        @FXML private ListView unitList;
+	@FXML private Button quitbutton;
+	@FXML private Button refreshbutton;
+        @FXML private Text timestamp;
+
+        @Override
 	public void initialize(URL location, ResourceBundle resources){
-            try {
-                // TODO Controller init
-                
-                instance = this;
-                m = Methods.getInstance();
+            instance = this;
+            m = Methods.getInstance();
+            
+            try {                
                 instance.url = new URL("http://tuftuf.gambitlabs.fi/feed.txt");
-                
-                listview.setPrefSize(900, 780);
-                
             } catch (MalformedURLException ex) {
                 Logger.getLogger(FXMLcontroller.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -80,17 +79,71 @@ public class FXMLcontroller implements Initializable {
 	//TODO Button handlers
 	@FXML
 	private void refresh_btn_action(ActionEvent ev) throws Exception{
-                output = FXCollections.observableArrayList();
-                templist = m.fetch(url); //Get data
-                timestamp.setText(m.getTime(templist)); //Set the time when data was taken according to the raw data
-                templist = m.parse(templist); //Remove timestamp and "#:", leaving only raw data values
-                //ListView
-                output.add("Flow rate:\t\t\t\t\t" + m.getREAL4Value(templist.get(indexFlowHigh), templist.get(indexFlowLow)) + "\t\tm3/s");
-                output.add("Energy flow rate:\t\t\t" + m.getREAL4Value(templist.get(indexEnergyFlowHigh), templist.get(indexEnergyFlowLow)) + "\t\tGJ/h");
-                output.add("Temperature #1 (inlet, C):\t" + m.getREAL4Value(templist.get(indexTemp1High), templist.get(indexTemp1Low)) + "\t\tC");
-                output.add("Temperature #2 (outlet, C):\t" + m.getREAL4Value(templist.get(indexTemp2High), templist.get(indexTemp2Low)) + "\t\tC");
-                output.add("Signal quality (0-99): " + m.getSignalQuality(templist.get(91))); //Set #92 (signal quality) to human readable value
-                listview.setItems(output);
+            
+            //Data handling
+            rawData = m.fetch(url); //Get data from live feed)
+            timestamp.setText(m.getTime(rawData)); //Set the time when data was taken according to the raw data
+            rawData = m.parse(rawData); //Remove "#:", leaving only raw data values
+            rawData.set(0, timestamp.getText()); //set back the value of Time, in case neede in future
+                
+                
+            //Fill table info      ***(table is actually three listviews that work as columns, couldnt get TableView to work)
+            
+            //Flow rate
+            values.add(
+                    new Data(
+                        "Flow rate",
+                        m.real4toFloat(rawData.get(FlowHigh), rawData.get(FlowLow)),
+                        "m3/h"));
+
+            //Energy flow rate
+            values.add(
+                    new Data(
+                        "Energy flow rate",
+                        m.real4toFloat(rawData.get(EnergyFlowHigh), rawData.get(EnergyFlowLow)),
+                        "GJ/h"));
+
+            //TODO +acc. long
+            //Todo +acc decimal
+            //Todo -acc. long
+            //Todo -acc. decimal
+            
+            //Temperature (inlet)
+            values.add(
+                    new Data(
+                        "Temperature #1 (Inlet)",
+                        m.real4toFloat(rawData.get(Temp1High), rawData.get(Temp1Low)),
+                        "C"));
+
+            //Temperature (outlet)
+            values.add(
+                    new Data(
+                        "Temperature #2 (Outlet)",
+                        m.real4toFloat(rawData.get(Temp2High), rawData.get(Temp2Low)),
+                        "C"));
+
+            //Signal quality
+            values.add(
+                    new Data(
+                        "Signal quality",
+                        m.getLowByteDecimalString(rawData.get(SignalQuality)),
+                        "0-99"));
+
+            //Add to ListViews (columns)
+            //Fill lists
+            
+            System.out.println(values.size() + " -should be 5"); //All Data() are in values
+            
+            for(Data data : values){ //For every Data
+                description.add(data.getDescription());
+                value.add(data.getValue());
+                unit.add(data.getUnit());
+            }
+            //Set lists to columns
+            descriptionList.setItems(description);
+            valueList.setItems(value);
+            unitList.setItems(unit);
+            
         }
         
 	@FXML
