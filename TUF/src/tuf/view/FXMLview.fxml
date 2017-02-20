@@ -12,54 +12,21 @@
    <children>
       <HBox layoutX="14.0" layoutY="14.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1260.0">
          <children>
-            <TitledPane animated="false" prefHeight="760.0" prefWidth="350.0" text="Description">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="350.0">
-                     <children>
-                        <ListView fx:id="descriptionList" prefHeight="735.0" prefWidth="350.0">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </ListView>
-                     </children>
-                  </AnchorPane>
-               </content>
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </TitledPane>
-            <TitledPane animated="false" prefHeight="760.0" prefWidth="350.0" text="Value">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="350.0">
-                     <children>
-                        <ListView fx:id="valueList" prefHeight="735.0" prefWidth="350.0">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </ListView>
-                     </children>
-                  </AnchorPane>
-               </content>
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </TitledPane>
-            <TitledPane animated="false" prefHeight="760.0" prefWidth="250.0" text="Unit">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="250.0">
-                     <children>
-                        <ListView fx:id="unitList" prefHeight="735.0" prefWidth="250.0">
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </ListView>
-                     </children>
-                  </AnchorPane>
-               </content>
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </TitledPane>
+            <ListView fx:id="descriptionList" prefHeight="735.0" prefWidth="350.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ListView>
+            <ListView fx:id="valueList" prefHeight="735.0" prefWidth="350.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ListView>
+            <ListView fx:id="unitList" prefHeight="735.0" prefWidth="250.0">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </ListView>
             <VBox prefHeight="780.0" prefWidth="300.0">
                <HBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -75,7 +42,7 @@
                   </Button>
                   <Pane prefHeight="397.0" prefWidth="300.0">
                      <children>
-                        <Text fx:id="timestamp" layoutX="29.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="242.13671875">
+                        <Text fx:id="timestamp" layoutX="68.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="162.13671875">
                            <font>
                               <Font size="18.0" />
                            </font>

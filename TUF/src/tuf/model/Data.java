@@ -5,7 +5,7 @@ package tuf.model;
  */
 public class Data {
     
-    private String description = "";
+    private String description = "Default description";
     private String value = "";
     private String unit = "";
     
@@ -28,15 +28,12 @@ public class Data {
     }
     
     public String getDescription(){
-        System.out.println("Is: " + description + ", but about to return: " + this.description);
         return description;
     }
     public String getValue(){
-        System.out.println("Is: " + value + ", but about to return: " + this.value);
         return value;
     }
     public String getUnit(){
-        System.out.println("Is: " + unit+ ", but about to return: " + this.unit);
         return unit;
     }
 }

@@ -34,7 +34,7 @@ public class FXMLcontroller implements Initializable {
 	private URL url;
         private ObservableList<String> rawData = FXCollections.observableArrayList();
         private ObservableList<Data> values = FXCollections.observableArrayList();
-        private ObservableList<String> description, value, unit = FXCollections.observableArrayList();
+        private ObservableList<String> description, value, unit;
         
         //Controller instance
 	private static FXMLcontroller instance;
@@ -88,6 +88,9 @@ public class FXMLcontroller implements Initializable {
                 
                 
             //Fill table info      ***(table is actually three listviews that work as columns, couldnt get TableView to work)
+            description = FXCollections.observableArrayList();
+            value = FXCollections.observableArrayList();
+            unit = FXCollections.observableArrayList();
             
             //Flow rate
             values.add(
@@ -130,15 +133,20 @@ public class FXMLcontroller implements Initializable {
                         "0-99"));
 
             //Add to ListViews (columns)
+            description.add("Description:");
+            value.add("Value:");
+            unit.add("Unit:");
+            description.add("");
+            value.add("");
+            unit.add("");
+
             //Fill lists
-            
-            System.out.println(values.size() + " -should be 5"); //All Data() are in values
-            
             for(Data data : values){ //For every Data
                 description.add(data.getDescription());
                 value.add(data.getValue());
                 unit.add(data.getUnit());
             }
+            
             //Set lists to columns
             descriptionList.setItems(description);
             valueList.setItems(value);
