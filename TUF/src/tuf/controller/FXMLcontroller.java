@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,7 +28,14 @@ public class FXMLcontroller implements Initializable {
 	
 	private Methods m;
 	private URL url;
-        private ObservableList<String> list;
+        private ObservableList<String> output;
+        private ObservableList<String> templist;
+        
+        private int indexTemp1High = 33;
+        private int indexTemp1Low = 34;
+        private int indexTemp2High = 35;
+        private int indexTemp2Low = 36;
+        private int indexSignalQuality = 92;
 	
 	private static FXMLcontroller instance;
 	
@@ -62,12 +70,14 @@ public class FXMLcontroller implements Initializable {
 	//TODO Button handlers
 	@FXML
 	private void refresh_btn_action(ActionEvent ev) throws Exception{
-                list = m.fetch(url); //Get data
-                timestamp.setText(m.getTime(list)); //Set the time when data was taken according to the raw data
-                list = m.parse(list); //Remove timestamp and "#:", leaving only raw data values
-                list.set(91, ("Signal quality (0-99): " + m.getSignalQuality(list.get(91)))); //Set #92 (signal quality) to human readable value
-                listview.setItems(list);
-                System.out.println(list.size());
+                output = FXCollections.observableArrayList();
+                templist = m.fetch(url); //Get data
+                timestamp.setText(m.getTime(templist)); //Set the time when data was taken according to the raw data
+                templist = m.parse(templist); //Remove timestamp and "#:", leaving only raw data values
+                output.add("Temperature #1 (inlet, C):\t" + m.getREAL4Value(templist.get(indexTemp1High), templist.get(indexTemp1Low)));
+                output.add("Temperature #2 (outlet, C):\t" + m.getREAL4Value(templist.get(indexTemp2High), templist.get(indexTemp2Low)));
+                output.add("Signal quality (0-99): " + m.getSignalQuality(templist.get(91))); //Set #92 (signal quality) to human readable value
+                listview.setItems(output);
         }
         
 	@FXML
