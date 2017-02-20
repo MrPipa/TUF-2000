@@ -12,9 +12,9 @@
 hs_err_pid*
 
 #Generated folders
-build/
-nbproject/private/
-dist/
+TUF/build/
+TUF/nbproject/private/
+TUF/dist/
 
 
 
