@@ -82,6 +82,8 @@ public class FXMLcontroller implements Initializable {
         
 	@FXML
 	private void quit_btn_action(ActionEvent ev){
-		System.exit(0);
+            String high = "16611";
+            String low = "15568";
+            System.out.println("Should be 7.xxxx but is: " + m.getREAL4Value(high, low));
 	}
 }

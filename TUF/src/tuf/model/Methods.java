@@ -70,12 +70,12 @@ public class Methods {
                                         .length() - 7))); //Choose only last 8 bits (LOW byte)
     }
 
-    //Binary to Integer
+    //BinaryString to Integer
     private int bin2int(String s) {
         return Integer.parseInt(s, 2); //Converting to integer from assumed BinaryString
     }
 
-    //Temp #1 (IN)
+    //REAL4 converter
     public String getREAL4Value(String high, String low) {
         return Float.toString(r42f(high, low));
     }
@@ -87,7 +87,7 @@ public class Methods {
 
         int sign;
         int exp;
-        int mant;
+        double mant;
         
         //Convert to binary
         String bin1 = Integer.toBinaryString(Integer.parseInt(high));
@@ -100,42 +100,41 @@ public class Methods {
         while (bin2.length() != 16){
             bin2 = "0" + bin2; //add the zero in front where it is missing
         }
-        System.out.println("high:\t" + bin1 + " : " + bin1.length());
-        System.out.println("low:\t" + bin2 + " : " + bin2.length());
-        
 
         //Combine
         String bin = bin1 + bin2; //32bit single percision
-        System.out.println("combined:\t" + bin + " : " + bin.length());
+        
         //Sign
         //From string to char so we can use "charAt" to get first bit
         //and then back to string (with new String(newchar[]{})) so it can be converted to integer
         sign = Integer.parseInt(new String(new char[]{bin.charAt(0)})); //We want the first "char" from the string => index[0]
 
         //Exp (= next 7 bits in decimal - 127)
-        char[] next8 = new char[8];                    //First we make a char array to add the 8 bits to
-        bin.getChars(1, 9, next8, 0);           //Add the bits to the array
-        System.out.println("next8:");
-        for (char c : next8){
-            System.out.println(c);
-        }
-        exp = bin2int(new String(next8));   //Convert the array to a String which we can convert to Integer (the value we want)
+        char[] next8bits = new char[8];                    //First we make a char array to add the 8 bits to
+        bin.getChars(1, 9, next8bits, 0);           //Add the bits to the array
+        String next8 = new String(next8bits);
+        exp = bin2int(next8);   //Convert the array to a String which we can convert to Integer (the value we want)
         exp -= 127;                             //finally subtract 127 so we get the exponent according to our equation
 
         //Mantissa
-        char[] last23 = new char[23];
-        bin.getChars(9, 31, last23, 0);
-        System.out.println("last23");
-        for (char c : last23){
-            System.out.println(c);
-        }
-        mant = bin2int(new String(last23));
+        String last23 = bin.substring(9);   //last 23 bits
+        mant = bin2int(last23);             //converted to decimal value (integer)
         if((exp+127) > 0){
-            mant = (mant/(8388608+1)); //8388608 is 800000 in hex which when divided by (and +1) gives the mantissa value.
+            mant = (mant/8388608)+1; //8388608 is 800000 in hex which when divided by (and +1) gives the mantissa value.
         }
+        else{
+            mant = mant/4194304;
+        }
+        System.out.println("exp+127: " + (exp+127));
         
-        //Value (as double to prevent loss)
-        double value = Math.pow(-1, sign) * mant * Math.pow(2, exp);
+        double a = Math.pow(-1, sign);
+        double b = mant;
+        System.out.println("mant: " + mant);
+        System.out.println("b: " + b);
+        double c = Math.pow(2,exp);
+        
+        //Value (as double to prevent loss, some java thing)
+        double value = a*b*c;
         return (float) value;
     }
 }
