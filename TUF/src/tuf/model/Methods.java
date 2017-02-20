@@ -107,7 +107,11 @@ public class Methods {
         //Sign
         //From string to char so we can use "charAt" to get first bit
         //and then back to string (with new String(newchar[]{})) so it can be converted to integer
-        sign = Integer.parseInt(new String(new char[]{bin.charAt(0)})); //We want the first "char" from the string => index[0]
+        sign = Integer.parseInt( //Convert String to integer (the sign)
+                new String( //String can be converted to Integer
+                        new char[]{ //Char array can be converted to String
+                            bin.charAt(0) //index 0 = first bit in bin, which is the sign
+                        }));
 
         //Exp (= next 7 bits in decimal - 127)
         char[] next8bits = new char[8];                    //First we make a char array to add the 8 bits to
