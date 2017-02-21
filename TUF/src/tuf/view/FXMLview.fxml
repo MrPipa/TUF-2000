@@ -40,13 +40,9 @@
                         <Font size="25.0" />
                      </font>
                   </Button>
-                  <Pane prefHeight="397.0" prefWidth="300.0">
+                  <Pane prefHeight="400.0" prefWidth="300.0">
                      <children>
-                        <Text fx:id="timestamp" layoutX="68.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="162.13671875">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
+                        <TextArea fx:id="console" layoutX="14.0" layoutY="14.0" prefHeight="380.0" prefWidth="270.0" />
                      </children></Pane>
                   <Button fx:id="quitbutton" mnemonicParsing="false" onAction="#quit_btn_action" prefHeight="80.0" prefWidth="300.0" style="-fx-border-color: #000000; -fx-background-color: #D3D3D3;" text="Quit">
                      <VBox.margin>

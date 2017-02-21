@@ -5,13 +5,11 @@
  */
 package tuf.controller;
 
-import java.awt.BorderLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 import tuf.model.Data;
 import tuf.model.Methods;
@@ -32,9 +31,17 @@ public class FXMLcontroller implements Initializable {
         //Values
 	private Methods m;
 	private URL url;
+        
+        //List for input
         private ObservableList<String> rawData = FXCollections.observableArrayList();
+        
+        //List for output
         private ObservableList<Data> values = FXCollections.observableArrayList();
-        private ObservableList<String> description, value, unit;
+        
+        //Columns (UI)
+        private ObservableList<String> description = FXCollections.observableArrayList();
+        private ObservableList<String> value = FXCollections.observableArrayList();
+        private ObservableList<String> unit = FXCollections.observableArrayList();
         
         //Controller instance
 	private static FXMLcontroller instance;
@@ -50,10 +57,30 @@ public class FXMLcontroller implements Initializable {
         private final int FluidSoundSpeedLow = 8;
         private final int PositiveAccDecFracHigh = 11;
         private final int PositiveAccDecFracLow = 12;
+        
         private final int Temp1High = 33;
         private final int Temp1Low = 34;
         private final int Temp2High = 35;
         private final int Temp2Low = 36;
+        private final int AI3High = 37;
+        private final int AI3Low = 38;
+        private final int AI4High = 39;
+        private final int AI4Low = 40;
+        private final int AI5High = 41;
+        private final int AI5Low = 42;
+        private final int CInputAI3High = 43;
+        private final int CInputAI3Low = 44;
+        private final int CInputAI4High = 45;
+        private final int CInputAI4Low = 46;
+        private final int CInputAI5High = 47;
+        private final int CInputAI5Low = 48;
+        
+        private final int ErrorCode = 72;
+        private final int PT100RInletHigh = 73;
+        private final int PT100RInletLow = 74;
+        private final int PT100ROutletHigh = 75;
+        private final int PT100ROutletLow = 76;
+        
         private final int SignalQuality = 92;
 	
         //GUI elements
@@ -62,7 +89,7 @@ public class FXMLcontroller implements Initializable {
         @FXML private ListView unitList;
 	@FXML private Button quitbutton;
 	@FXML private Button refreshbutton;
-        @FXML private Text timestamp;
+        @FXML private TextArea console;
 
         @Override
 	public void initialize(URL location, ResourceBundle resources){
@@ -82,11 +109,15 @@ public class FXMLcontroller implements Initializable {
             
             //Data handling
             rawData = m.fetch(url); //Get data from live feed)
-            timestamp.setText(m.getTime(rawData)); //Set the time when data was taken according to the raw data
+            console.setText("Data collected:\n");
+            console.setText(console.getText() + m.getTime(rawData)); //Set the time when data was taken according to the raw data
             rawData = m.parse(rawData); //Remove "#:", leaving only raw data values
-            rawData.set(0, timestamp.getText()); //set back the value of Time, in case neede in future
                 
-                
+            //Empty columns
+            description.clear();
+            value.clear();
+            unit.clear();
+            
             //Fill table info      ***(table is actually three listviews that work as columns, couldnt get TableView to work)
             description = FXCollections.observableArrayList();
             value = FXCollections.observableArrayList();
@@ -124,6 +155,34 @@ public class FXMLcontroller implements Initializable {
                         "Temperature #2 (Outlet)",
                         m.real4toFloat(rawData.get(Temp2High), rawData.get(Temp2Low)),
                         "C"));
+            
+            //Analog input AI3
+            values.add(
+                    new Data(
+                        "Analog input AI3",
+                        m.real4toFloat(rawData.get(AI3High), rawData.get(AI3Low)),
+                        "mA"));
+            
+            //Analog input AI4
+            values.add(
+                    new Data(
+                        "Analog input AI4",
+                        m.real4toFloat(rawData.get(AI4High), rawData.get(AI4Low)),
+                        "mA"));
+            
+            //Analog input AI5
+            values.add(
+                    new Data(
+                        "Analog input AI5",
+                        m.real4toFloat(rawData.get(AI5High), rawData.get(AI5Low)),
+                        "mA"));
+            
+            //Error code
+            values.add(
+                    new Data(
+                        "Error code",
+                        rawData.get(ErrorCode),
+                        "mA"));
 
             //Signal quality
             values.add(
