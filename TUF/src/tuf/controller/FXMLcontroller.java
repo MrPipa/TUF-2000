@@ -18,7 +18,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.text.Text;
+import javafx.scene.input.MouseEvent;
+import javax.swing.JOptionPane;
 import tuf.model.Data;
 import tuf.model.Methods;
 
@@ -49,31 +50,31 @@ public class FXMLcontroller implements Initializable {
         //Modbus register indexes
         private final int FlowHigh = 1;
         private final int FlowLow = 2;
-        private final int EnergyFlowHigh = 3;
-        private final int EnergyFlowLow = 4;
-        private final int VelocityHigh = 5;
-        private final int VelocityLow = 6;
-        private final int FluidSoundSpeedHigh = 7;
-        private final int FluidSoundSpeedLow = 8;
-        private final int PositiveAccDecFracHigh = 11;
-        private final int PositiveAccDecFracLow = 12;
+        private final int EnergyFlowLow = 3;
+        private final int EnergyFlowHigh = 4;
+        private final int VelocityLow = 5;
+        private final int VelocityHigh = 6;
+        private final int FluidSoundSpeedLow = 7;
+        private final int FluidSoundSpeedHigh = 8;
+        private final int PositiveAccDecFracLow = 11;
+        private final int PositiveAccDecFracHigh = 12;
         
-        private final int Temp1High = 33;
-        private final int Temp1Low = 34;
-        private final int Temp2High = 35;
-        private final int Temp2Low = 36;
-        private final int AI3High = 37;
-        private final int AI3Low = 38;
-        private final int AI4High = 39;
-        private final int AI4Low = 40;
-        private final int AI5High = 41;
-        private final int AI5Low = 42;
-        private final int CInputAI3High = 43;
-        private final int CInputAI3Low = 44;
-        private final int CInputAI4High = 45;
-        private final int CInputAI4Low = 46;
-        private final int CInputAI5High = 47;
-        private final int CInputAI5Low = 48;
+        private final int Temp1Low = 33;
+        private final int Temp1High = 34;
+        private final int Temp2Low = 35;
+        private final int Temp2High = 36;
+        private final int AI3Low = 37;
+        private final int AI3High = 38;
+        private final int AI4Low = 39;
+        private final int AI4High = 40;
+        private final int AI5Low = 41;
+        private final int AI5High = 42;
+        private final int CInputAI3Low = 43;
+        private final int CInputAI3High = 44;
+        private final int CInputAI4Low = 45;
+        private final int CInputAI4High = 46;
+        private final int CInputAI5Low = 47;
+        private final int CInputAI5High = 48;
         
         private final int ErrorCode = 72;
         private final int PT100RInletHigh = 73;
@@ -103,25 +104,25 @@ public class FXMLcontroller implements Initializable {
             }
 	}
 	
-	//TODO Button handlers
-	@FXML
+	/*
+        * Button handlers
+        */
+        
+	@FXML //Refresh button pressed
 	private void refresh_btn_action(ActionEvent ev) throws Exception{
             
             //Data handling
             rawData = m.fetch(url); //Get data from live feed)
             console.setText("Data collected:\n");
             console.setText(console.getText() + m.getTime(rawData)); //Set the time when data was taken according to the raw data
-            rawData = m.parse(rawData); //Remove "#:", leaving only raw data values
+            rawData = m.parse(rawData); //Remove "#:", leaving only raw data values in rawData list
                 
-            //Empty columns
-            description.clear();
-            value.clear();
-            unit.clear();
+            //Clear "values" list for new information
+            values.clear();
             
-            //Fill table info      ***(table is actually three listviews that work as columns, couldnt get TableView to work)
-            description = FXCollections.observableArrayList();
-            value = FXCollections.observableArrayList();
-            unit = FXCollections.observableArrayList();
+            /*
+            *   Fill table info      ***(table is actually three listviews that work as columns, couldnt get TableView to work)
+            */
             
             //Flow rate
             values.add(
@@ -137,10 +138,10 @@ public class FXMLcontroller implements Initializable {
                         m.real4toFloat(rawData.get(EnergyFlowHigh), rawData.get(EnergyFlowLow)),
                         "GJ/h"));
 
-            //TODO +acc. long
-            //Todo +acc decimal
-            //Todo -acc. long
-            //Todo -acc. decimal
+            //+acc. long
+            //+acc decimal
+            //-acc. long
+            //-acc. decimal
             
             //Temperature (inlet)
             values.add(
@@ -191,14 +192,23 @@ public class FXMLcontroller implements Initializable {
                         m.getLowByteDecimalString(rawData.get(SignalQuality)),
                         "0-99"));
 
-            //Add to ListViews (columns)
+            /*
+            *   Set information to ListViews to present data to user
+            */
+            
+            //Clear lists if refresh has been pressed earlier
+            description.clear();
+            value.clear();
+            unit.clear();
+            
+            //TODO "headers", will be fixed later
             description.add("Description:");
             value.add("Value:");
             unit.add("Unit:");
             description.add("");
             value.add("");
             unit.add("");
-
+            
             //Fill lists
             for(Data data : values){ //For every Data
                 description.add(data.getDescription());
@@ -206,15 +216,39 @@ public class FXMLcontroller implements Initializable {
                 unit.add(data.getUnit());
             }
             
-            //Set lists to columns
+            //Insert lists to columns
             descriptionList.setItems(description);
             valueList.setItems(value);
             unitList.setItems(unit);
-            
         }
         
-	@FXML
+	@FXML //Quit button pressed
 	private void quit_btn_action(ActionEvent ev){
             System.exit(0);
 	}
+        
+        /*
+        *   Mouse clicked handlers
+        */
+        @FXML
+        private void unitCellClicked(MouseEvent click){
+            if(click.getClickCount() >= 2){
+                String unit = (String) unitList.getSelectionModel().getSelectedItem();
+                if(unit.equals("m3/h")){
+                    JOptionPane.showMessageDialog(null, "m3/h\n\nCubic meters per hour");
+                }
+                else if(unit.equals("C")){
+                    JOptionPane.showMessageDialog(null, "C\n\nDegrees in Celsius");
+                }
+                else if(unit.equals("mA")){
+                    JOptionPane.showMessageDialog(null, "mA\n\nMilli Ampere ( mA*1000 = A)");
+                }
+                else if(unit.equals("0-99")){
+                    JOptionPane.showMessageDialog(null, "0-99\n\nA constant, bigger is better.");
+                }
+                else if(unit.equals("GJ/h")){
+                    JOptionPane.showMessageDialog(null, "GJ/h\n\nGiga Joule per hour (Giga = 10^9)");
+                }
+            }
+        }
 }

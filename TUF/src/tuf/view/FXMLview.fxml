@@ -22,7 +22,7 @@
                   <Insets />
                </opaqueInsets>
             </ListView>
-            <ListView fx:id="unitList" prefHeight="735.0" prefWidth="250.0">
+            <ListView fx:id="unitList" onMouseClicked="#unitCellClicked" prefHeight="735.0" prefWidth="250.0">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
