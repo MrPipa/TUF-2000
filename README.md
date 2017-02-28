@@ -1,2 +1,2 @@
 # TUF-2000
-A task by a company to prove my skills for possible future work.
+TUF-2000 is a advanced waterflow meter. This project is a piece of software written in Java to fetch that information via url and convert the raw data to human readable values.
