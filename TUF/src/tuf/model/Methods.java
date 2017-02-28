@@ -59,7 +59,7 @@ public class Methods {
         return timestamp;
     }
 
-    //Get low byte decimal (aka. Signal Quality)
+    //Get low byte in decimal (string)
     public String getLowByteDecimalString(String s) { //Get low byte from raw integer value
         int value = 0;
         if(s.length() > 8){
@@ -90,6 +90,9 @@ public class Methods {
     public float real4toFloat(String high, String low) {
         //This conversion is explained by Modbus, I will not go into detail how the conversion is made.
         //I am building the equation (-1)^sign * Mantissa * 2^exp as explained by Modbus
+        if(high.equals("0") || low.equals("0")){
+            return (float) 0;
+        }
 
         int sign;
         int exp;
@@ -141,6 +144,15 @@ public class Methods {
 
         //Value (as double to prevent loss, some java thing)
         double value = a * b * c;
+        
+        //Check if HIGH and LOW bytes were in correct order: (If outside possible 32bit single percision float value)
+        float max = (float) Math.pow(6.79, 38); //checked with ModBus excel for converting REAL4 to decimal
+        float min = (float) Math.pow(1.4, -45); //checked with ModBus Excel for converting REAL4 to decimal
+        
+        if ((value <= min && value >= -min) || (value >= max && value <=  -max)) {
+            System.out.println("Wrong value, switching HIGH: " + high + " and LOW: " + low);
+            return real4toFloat(low, high);
+        }
         return (float) value;
     }
 }
