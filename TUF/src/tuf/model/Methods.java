@@ -38,7 +38,7 @@ public class Methods {
 
     //Parse list
     public ObservableList<String> parse(ObservableList<String> list) {
-        for (int i = 0; i<list.size() ; i++) {
+        for (int i = 0; i < list.size(); i++) {
             String[] temp = list.get(i).split(":"); //temp[0] is index and temp[1] will be the raw data value
             list.set(i, temp[1]); //replace #:[Value] with just value
         }
@@ -53,22 +53,32 @@ public class Methods {
         String[] dayNtime = temp[2].split(" "); //[day] hh:mm  -> day, hh:mm
         String day = dayNtime[0];
         String time = dayNtime[1];
-        
-        //TODO fix hour, seems to be two hours behind
 
+        //TODO fix hour, seems to be two hours behind
         String timestamp = day + "." + month + "." + year + "\t" + time; //Much nicer 31.12.2017    23:59
         return timestamp;
     }
 
     //Get low byte decimal (aka. Signal Quality)
     public String getLowByteDecimalString(String s) { //Get low byte from raw integer value
-        String temp = Integer.toBinaryString(Integer.parseInt(s));
-        return Integer.toString( //convert the result from integer to string for output
-                bin2int( //convert the low byte from binary to integer
-                        temp.substring( //"Select" the low byte
-                                Integer.toBinaryString( //Convert integer value to binary
-                                        Integer.parseInt(s)) //Make integer of the raw data value
-                                        .length() - 7))); //Choose only last 8 bits (LOW byte)
+        int value = 0;
+        if(s.length() > 8){
+            //String to integer:
+            int tempInt = Integer.parseInt(s);
+            
+            //To binary:
+            String binary = Integer.toBinaryString(tempInt);
+            
+            //Trim to 8 last bits:
+            String last8 = binary.substring(binary.length()-8, binary.length());
+            
+            //Convert back to integer
+            tempInt = bin2int(last8);
+            
+            //Convert to string
+            s = Integer.toString(tempInt);
+        }
+        return s;
     }
 
     //BinaryString to Integer
@@ -84,22 +94,22 @@ public class Methods {
         int sign;
         int exp;
         double mant;
-        
+
         //Convert to binary
         String bin1 = Integer.toBinaryString(Integer.parseInt(high));
         String bin2 = Integer.toBinaryString(Integer.parseInt(low));
-        
+
         //add missing zeros to make 16 bits
-        while (bin1.length() != 16){
+        while (bin1.length() != 16) {
             bin1 = "0" + bin1; //add the zero in front where it is missing
         }
-        while (bin2.length() != 16){
+        while (bin2.length() != 16) {
             bin2 = "0" + bin2; //add the zero in front where it is missing
         }
 
         //Combine
         String bin = bin1 + bin2; //32bit single percision
-        
+
         //Sign
         //From string to char so we can use "charAt" to get first bit
         //and then back to string (with new String(newchar[]{})) so it can be converted to integer
@@ -119,19 +129,18 @@ public class Methods {
         //Mantissa
         String last23 = bin.substring(9);   //last 23 bits
         mant = bin2int(last23);             //converted to decimal value (integer)
-        if((exp+127) > 0){
-            mant = (mant/8388608)+1; //8388608 is 800000 in hex which when divided by (and +1) gives the mantissa value.
+        if ((exp + 127) > 0) {
+            mant = (mant / 8388608) + 1; //8388608 is 800000 in hex which when divided by (and +1) gives the mantissa value.
+        } else {
+            mant = mant / 4194304;
         }
-        else{
-            mant = mant/4194304;
-        }
-        
+
         double a = Math.pow(-1, sign);
         double b = mant;
-        double c = Math.pow(2,exp);
-        
+        double c = Math.pow(2, exp);
+
         //Value (as double to prevent loss, some java thing)
-        double value = a*b*c;
+        double value = a * b * c;
         return (float) value;
     }
 }

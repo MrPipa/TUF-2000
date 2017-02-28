@@ -113,6 +113,7 @@ public class FXMLcontroller implements Initializable {
             
             //Data handling
             rawData = m.fetch(url); //Get data from live feed)
+            System.out.println("SIZE: " + rawData.size());
             console.setText("Data collected:\n");
             console.setText(console.getText() + m.getTime(rawData)); //Set the time when data was taken according to the raw data
             rawData = m.parse(rawData); //Remove "#:", leaving only raw data values in rawData list
@@ -135,7 +136,7 @@ public class FXMLcontroller implements Initializable {
             values.add(
                     new Data(
                         "Energy flow rate",
-                        m.real4toFloat(rawData.get(EnergyFlowHigh), rawData.get(EnergyFlowLow)),
+                        m.real4toFloat(rawData.get(EnergyFlowLow), rawData.get(EnergyFlowHigh)),
                         "GJ/h"));
 
             //+acc. long
